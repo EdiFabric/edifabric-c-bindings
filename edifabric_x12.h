@@ -71,7 +71,10 @@ typedef enum {
     EF_ERR_TOKEN_MISSING = 632,
     EF_ERR_MAX_LICENSES_EXCEEDED = 633,
     EF_ERR_LICENSE_SNAPSHOT_MISSING = 634,
-    EF_ERR_LICENSE_NOT_SET = 635
+    EF_ERR_LICENSE_NOT_SET = 635,
+    EF_ERR_RATE_EXCEEDED = 636,
+    EF_ERR_INVALID_JSON = 637,
+    EF_ERR_INCORRECT_LICENSE = 638
 } ef_error_code;
 
 /* Heap buffer returned by parse / build / get_token / get_result helpers. */
@@ -132,7 +135,8 @@ int ef_clear_cache(void);
  * Licensing
  * --------------------------------------------------------------------------- */
 
-int ef_install_license(const char *serial);
+/* Cache a token for runtime authorization; refresh it if it expires within `seconds`. */
+int ef_ensure_token(const char *serial, int seconds);
 int ef_get_app_version(int *app_version);
 int ef_get_token(const char *serial, ef_buffer *out);
 int ef_validate_token(const char *token);

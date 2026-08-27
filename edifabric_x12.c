@@ -30,7 +30,7 @@
 typedef int (*fn_init_logger)(const unsigned char *, int, int);
 typedef int (*fn_shutdown_logger)(void);
 typedef int (*fn_clear_cache)(void);
-typedef int (*fn_install_license)(const unsigned char *, int);
+typedef int (*fn_ensure_token)(const unsigned char *, int, int);
 typedef int (*fn_get_app_version)(int *);
 typedef int (*fn_get_token)(const unsigned char *, int, unsigned char *, int, int *);
 typedef int (*fn_validate_token)(const unsigned char *, int);
@@ -59,7 +59,7 @@ typedef struct {
     fn_init_logger init_logger;
     fn_shutdown_logger shutdown_logger;
     fn_clear_cache clear_cache;
-    fn_install_license install_license;
+    fn_ensure_token ensure_token;
     fn_get_app_version get_app_version;
     fn_get_token get_token;
     fn_validate_token validate_token;
@@ -150,7 +150,7 @@ static int try_load_file(const char *path)
     g_lib.init_logger = (fn_init_logger)sym(handle, "init_logger");
     g_lib.shutdown_logger = (fn_shutdown_logger)sym(handle, "shutdown_logger");
     g_lib.clear_cache = (fn_clear_cache)sym(handle, "clear_cache");
-    g_lib.install_license = (fn_install_license)sym(handle, "install_license");
+    g_lib.ensure_token = (fn_ensure_token)sym(handle, "ensure_token");
     g_lib.get_app_version = (fn_get_app_version)sym(handle, "get_app_version");
     g_lib.get_token = (fn_get_token)sym(handle, "get_token");
     g_lib.validate_token = (fn_validate_token)sym(handle, "validate_token");
@@ -169,7 +169,7 @@ static int try_load_file(const char *path)
     g_lib.free_error = (fn_free_error)sym(handle, "free_error");
 
     if (!g_lib.init_logger || !g_lib.shutdown_logger || !g_lib.clear_cache ||
-        !g_lib.install_license || !g_lib.get_app_version || !g_lib.get_token ||
+        !g_lib.ensure_token || !g_lib.get_app_version || !g_lib.get_token ||
         !g_lib.validate_token || !g_lib.set_token || !g_lib.get_token_expiration ||
         !g_lib.set_serial || !g_lib.set_map || !g_lib.parse || !g_lib.start_split ||
         !g_lib.split || !g_lib.build || !g_lib.start_merge || !g_lib.merge ||
@@ -437,12 +437,12 @@ int ef_clear_cache(void)
  * Licensing
  * --------------------------------------------------------------------------- */
 
-int ef_install_license(const char *serial)
+int ef_ensure_token(const char *serial, int seconds)
 {
     ef_library *L = lib();
     if (!L)
         return -1;
-    return L->install_license((const unsigned char *)serial, utf8_len(serial));
+    return L->ensure_token((const unsigned char *)serial, utf8_len(serial), seconds);
 }
 
 int ef_get_app_version(int *app_version)

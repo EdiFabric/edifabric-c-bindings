@@ -216,7 +216,7 @@ return heap buffers you free with `ef_free()`.
 | --- | --- |
 | Loading | `ef_load_library`, `ef_library_path`, `ef_last_load_error` |
 | Lifecycle | `ef_init_logger`, `ef_shutdown_logger`, `ef_clear_cache` |
-| Licensing | `ef_install_license`, `ef_get_app_version`, `ef_get_token`, `ef_validate_token`, `ef_set_token`, `ef_get_token_expiration`, `ef_set_serial` |
+| Licensing | `ef_ensure_token`, `ef_get_app_version`, `ef_get_token`, `ef_validate_token`, `ef_set_token`, `ef_get_token_expiration`, `ef_set_serial` |
 | Model map | `ef_set_map`, `ef_set_map_bytes` |
 | Processing | `ef_parse`, `ef_start_split`, `ef_split`, `ef_build`, `ef_start_merge`, `ef_merge`, `ef_get_result` |
 | Errors | `ef_get_error`, `ef_free_error`, `ef_raw_get_error`, `ef_free` |
@@ -234,7 +234,7 @@ binary yourself.
 
 > [!NOTE]
 > The examples are available with a free plan which can be used only with Serial model validation.
-> You don't need to call `install_license` with the free plan, and the only licensing call must be `set_serial`.
+> You don't need to call `ensure_token` with the free plan, and the only licensing call must be `set_serial`.
 
 The serial key for the free plan is:
 ```
@@ -245,17 +245,13 @@ Two models are supported. Tokens are recommended for containers, air-gapped
 machines, and high volume; serials are simplest when always online.
 
 ```c
-/* Token: fetch once with internet access, cache it, set it at process start */
-ef_buffer token;
-ef_get_token(serial, &token);
-ef_set_token((const char *)token.data);
-ef_free(token.data);
+/* Token: cache a token, refreshing it if it expires within N seconds */
+ef_ensure_token(serial, 3600);
 
 int64_t ticks = 0;
 ef_get_token_expiration(&ticks);   /* .NET UTC ticks, 0 when unset */
 
-/* Serial: register the machine once, then authorize per process */
-ef_install_license(serial);
+/* Serial: authorize per process against the license server */
 ef_set_serial(serial);
 ```
 
@@ -375,13 +371,16 @@ are exposed as `ef_error_code`, and `ef_get_error(code)` returns the message.
 | 626 | `merge` called before `start_merge` |
 | 627 | Incorrect or null output pointer |
 | 628 | Incorrect serial |
-| 629 | License not installed, run `install_license` |
+| 629 | License not installed |
 | 630 | Application maximum version exceeded |
 | 631 | Token expired |
 | 632 | Token missing |
 | 633 | Maximum licenses exceeded |
 | 634 | License snapshot not found |
 | 635 | License not set, call `set_token` or `set_serial` |
+| 636 | Rate exceeded |
+| 637 | Invalid JSON |
+| 638 | Incorrect license |
 
 ## Troubleshooting
 
@@ -394,7 +393,7 @@ path. Pass `--lib /path/to/library`, call `ef_load_library(...)`, or set
 
 **Error 635 on parse** — authorize first with `ef_set_token` or `ef_set_serial`.
 
-**Error 633 on install_license** — the plan's machine quota is used up. Switch to
+**Error 633 on ensure_token** — the plan's machine quota is used up. Switch to
 token authorization or contact support.
 
 **Windows: log file in use** — call `ef_shutdown_logger()` before deleting or
