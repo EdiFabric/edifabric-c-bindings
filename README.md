@@ -281,7 +281,7 @@ To download a model in either EdiNation Spec Library or EdiNation Spec Builder,
 select the model first, then in the JSON view
 select the Download button in the top right corner.
 
-![Model Img](https://github.com/EdiFabric/native-c-examples/blob/main/model.png)
+![Model Img](https://github.com/EdiFabric/edifabric-c-bindings/blob/main/model.png)
 
 Choose to download as **ediFabric Native**.
 
@@ -334,7 +334,7 @@ The values for the splitter can be found in EdiNation by loading a sample file. 
 
 The easiest way to get the splitter configuration is to click on the copy button under SPLITTER that has the full splitter JSON pre-configured.
 
-![Model Img](https://github.com/EdiFabric/native-c-examples/blob/main/splitter.png)
+![Model Img](https://github.com/EdiFabric/edifabric-c-bindings/blob/main/splitter.png)
 
 ## Threading
 
