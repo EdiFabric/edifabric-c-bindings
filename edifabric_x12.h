@@ -43,6 +43,7 @@ typedef enum {
 } ef_log_level;
 
 typedef enum {
+    EF_ERR_SUCCESS = 0,
     EF_ERR_INSUFFICIENT_CAPACITY = 1,
     EF_ERR_UNKNOWN = 501,
     EF_ERR_NO_CONNECTION = 502,
@@ -74,7 +75,8 @@ typedef enum {
     EF_ERR_LICENSE_NOT_SET = 635,
     EF_ERR_RATE_EXCEEDED = 636,
     EF_ERR_INVALID_JSON = 637,
-    EF_ERR_INCORRECT_LICENSE = 638
+    EF_ERR_INCORRECT_LICENSE = 638,
+    EF_ERR_LICENSE_QUOTA_EXCEEDED = 639
 } ef_error_code;
 
 /* Heap buffer returned by parse / build / get_token / get_result helpers. */
