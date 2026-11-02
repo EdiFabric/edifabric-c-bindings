@@ -261,7 +261,7 @@ binary yourself.
 | --- | --- | --- |
 | Community | `ef_set_serial` only | `ef_set_serial` |
 | Developer | `ef_set_serial` and `ef_ensure_token` (`ef_ensure_token` caches the result for 1 day) | `ef_ensure_token` |
-| Enterprise | `ef_set_serial`, `ef_ensure_token`, `ef_get_token` / `ef_set_token` | `ef_set_token` (offline tokens) |
+| Enterprise and Perpetual | `ef_set_serial`, `ef_ensure_token`, `ef_get_token` / `ef_set_token` | `ef_set_token` (offline tokens) |
 
 ```c
 /* Community: authorize per process against the license server */
@@ -275,13 +275,15 @@ ef_get_token_expiration(&ticks);   /* .NET UTC ticks, 0 when unset */
 /* Developer (also works): same as Community, online check per process */
 ef_set_serial(serial);
 
-/* Enterprise (recommended): fetch / validate / set an offline token yourself */
+/* Enterprise and Perpetual (recommended): fetch / validate / set an offline token yourself */
 ef_buffer token;
 ef_get_token(serial, &token);
 ef_validate_token((const char *)token.data);
 ef_set_token((const char *)token.data);
 ef_free(token.data);
 ```
+
+Self-service offline tokens last 30 days, so refresh them before they expire. If your hosts can't refresh a token, Enterprise can request a 1-year token and Perpetual a non-expiring token. Long-lived tokens are issued after the trial or evaluation period to registered companies using professional email addresses, and are non-refundable once issued. See [how to request one](https://www.edifabric.com/docs/faq/pricing-and-licensing-faqs.html#long-lived-tokens). Treat every token as a secret, and keep it out of source control.
 
 ## Model map
 
@@ -455,7 +457,7 @@ path. Pass `--lib /path/to/library`, call `ef_load_library(...)`, or set
 `ef_clear_cache` resets the map, so reload it afterwards.
 
 **Error 628 / 635 on parse** — authorize first: `ef_set_serial` on Community,
-`ef_ensure_token` (or `ef_set_serial`) on Developer, or `ef_set_token` on Enterprise.
+`ef_ensure_token` (or `ef_set_serial`) on Developer, or `ef_set_token` on Enterprise or Perpetual.
 
 **Error 633 on ensure_token / get_token** — the plan's machine quota is used up.
 Contact support.
