@@ -617,13 +617,14 @@ int main(int argc, char **argv)
         goto done;
     }
 
-    /* Free and developer licenses authenticate with set_serial only. */
-    section("Licensing: set_serial");
-    if (check(ef_set_serial(serial), "set_serial") != 0) {
+    /* ensure_token licenses the process on every plan: Community and the demo serial are checked online on
+       every operation, and Developer, Enterprise and Perpetual get a cached token. */
+    section("Licensing: ensure_token");
+    if (check(ef_ensure_token(serial, 3600), "ensure_token") != 0) {
         exit_code = 1;
         goto done;
     }
-    printf("  set_serial -> ok\n");
+    printf("  ensure_token -> ok\n");
 
     if (demo_set_local_map() != 0 ||
         demo_parse(&transactions) != 0 ||

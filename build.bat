@@ -6,10 +6,12 @@ rem Run from a "x64 Native Tools Command Prompt" or let this script find vcvars.
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
 
+rem Set outside the block below: %VSWHERE% inside it would expand before the set runs.
+set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+
 where cl >nul 2>&1
 if errorlevel 1 (
-  set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-  for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
+  for /f "usebackq tokens=*" %%i in (`call "%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
     call "%%i\VC\Auxiliary\Build\vcvars64.bat" >nul
   )
 )
